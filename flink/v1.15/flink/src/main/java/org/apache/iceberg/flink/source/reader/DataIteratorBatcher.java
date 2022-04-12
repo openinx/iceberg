@@ -17,20 +17,19 @@
  * under the License.
  */
 
-def flinkVersions = (System.getProperty("flinkVersions") != null ? System.getProperty("flinkVersions") : System.getProperty("defaultFlinkVersions")).split(",")
+package org.apache.iceberg.flink.source.reader;
 
-if (flinkVersions.contains("1.12")) {
-  apply from: file("$projectDir/v1.12/build.gradle")
-}
+import java.io.Serializable;
+import org.apache.flink.connector.base.source.reader.RecordsWithSplitIds;
+import org.apache.flink.connector.base.source.reader.splitreader.SplitReader;
+import org.apache.iceberg.flink.source.DataIterator;
+import org.apache.iceberg.io.CloseableIterator;
 
-if (flinkVersions.contains("1.13")) {
-  apply from: file("$projectDir/v1.13/build.gradle")
-}
-
-if (flinkVersions.contains("1.14")) {
-  apply from: file("$projectDir/v1.14/build.gradle")
-}
-
-if (flinkVersions.contains("1.15")) {
-  apply from: file("$projectDir/v1.15/build.gradle")
+/**
+ * Batcher converts iterator of T into iterator of batched {@code RecordsWithSplitIds<RecordAndPosition<T>>},
+ * as FLIP-27's {@link SplitReader#fetch()} returns batched records.
+ */
+@FunctionalInterface
+public interface DataIteratorBatcher<T> extends Serializable {
+  CloseableIterator<RecordsWithSplitIds<RecordAndPosition<T>>> batch(String splitId, DataIterator<T> inputIterator);
 }

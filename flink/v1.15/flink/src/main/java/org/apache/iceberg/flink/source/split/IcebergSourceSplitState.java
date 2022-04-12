@@ -17,20 +17,22 @@
  * under the License.
  */
 
-def flinkVersions = (System.getProperty("flinkVersions") != null ? System.getProperty("flinkVersions") : System.getProperty("defaultFlinkVersions")).split(",")
+package org.apache.iceberg.flink.source.split;
 
-if (flinkVersions.contains("1.12")) {
-  apply from: file("$projectDir/v1.12/build.gradle")
-}
+public class IcebergSourceSplitState {
+  private final IcebergSourceSplit split;
+  private final IcebergSourceSplitStatus status;
 
-if (flinkVersions.contains("1.13")) {
-  apply from: file("$projectDir/v1.13/build.gradle")
-}
+  public IcebergSourceSplitState(IcebergSourceSplit split, IcebergSourceSplitStatus status) {
+    this.split = split;
+    this.status = status;
+  }
 
-if (flinkVersions.contains("1.14")) {
-  apply from: file("$projectDir/v1.14/build.gradle")
-}
+  public IcebergSourceSplit split() {
+    return split;
+  }
 
-if (flinkVersions.contains("1.15")) {
-  apply from: file("$projectDir/v1.15/build.gradle")
+  public IcebergSourceSplitStatus status() {
+    return status;
+  }
 }

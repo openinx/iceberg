@@ -17,20 +17,24 @@
  * under the License.
  */
 
-def flinkVersions = (System.getProperty("flinkVersions") != null ? System.getProperty("flinkVersions") : System.getProperty("defaultFlinkVersions")).split(",")
+package org.apache.iceberg.flink.source.reader;
 
-if (flinkVersions.contains("1.12")) {
-  apply from: file("$projectDir/v1.12/build.gradle")
-}
+import java.io.Serializable;
 
-if (flinkVersions.contains("1.13")) {
-  apply from: file("$projectDir/v1.13/build.gradle")
-}
+/**
+ * In FLIP-27 source, SplitReader#fetch() returns a batch of records.
+ * Since DataIterator for RowData returns an iterator of reused RowData objects,
+ * RecordFactory is needed to (1) create object array that is recyclable via pool.
+ * (2) clone RowData element from DataIterator to the batch array.
+ */
+interface RecordFactory<T> extends Serializable {
+  /**
+   * Create a batch of records
+   */
+  T[] createBatch(int batchSize);
 
-if (flinkVersions.contains("1.14")) {
-  apply from: file("$projectDir/v1.14/build.gradle")
-}
-
-if (flinkVersions.contains("1.15")) {
-  apply from: file("$projectDir/v1.15/build.gradle")
+  /**
+   * Clone record into the specified position of the batch array
+   */
+  void clone(T from, T[] batch, int position);
 }

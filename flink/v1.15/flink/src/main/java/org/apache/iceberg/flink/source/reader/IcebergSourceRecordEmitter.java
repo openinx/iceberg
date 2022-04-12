@@ -17,20 +17,23 @@
  * under the License.
  */
 
-def flinkVersions = (System.getProperty("flinkVersions") != null ? System.getProperty("flinkVersions") : System.getProperty("defaultFlinkVersions")).split(",")
+package org.apache.iceberg.flink.source.reader;
 
-if (flinkVersions.contains("1.12")) {
-  apply from: file("$projectDir/v1.12/build.gradle")
-}
+import org.apache.flink.api.connector.source.SourceOutput;
+import org.apache.flink.connector.base.source.reader.RecordEmitter;
+import org.apache.iceberg.flink.source.split.IcebergSourceSplit;
 
-if (flinkVersions.contains("1.13")) {
-  apply from: file("$projectDir/v1.13/build.gradle")
-}
+final class IcebergSourceRecordEmitter<T> implements RecordEmitter<RecordAndPosition<T>, T, IcebergSourceSplit> {
 
-if (flinkVersions.contains("1.14")) {
-  apply from: file("$projectDir/v1.14/build.gradle")
-}
+  IcebergSourceRecordEmitter() {
+  }
 
-if (flinkVersions.contains("1.15")) {
-  apply from: file("$projectDir/v1.15/build.gradle")
+  @Override
+  public void emitRecord(
+      RecordAndPosition<T> element,
+      SourceOutput<T> output,
+      IcebergSourceSplit split) {
+    output.collect(element.record());
+    split.updatePosition(element.fileOffset(), element.recordOffset());
+  }
 }

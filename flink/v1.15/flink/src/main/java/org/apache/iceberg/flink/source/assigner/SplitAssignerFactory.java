@@ -17,20 +17,15 @@
  * under the License.
  */
 
-def flinkVersions = (System.getProperty("flinkVersions") != null ? System.getProperty("flinkVersions") : System.getProperty("defaultFlinkVersions")).split(",")
+package org.apache.iceberg.flink.source.assigner;
 
-if (flinkVersions.contains("1.12")) {
-  apply from: file("$projectDir/v1.12/build.gradle")
-}
+import java.io.Serializable;
+import java.util.Collection;
+import org.apache.iceberg.flink.source.split.IcebergSourceSplitState;
 
-if (flinkVersions.contains("1.13")) {
-  apply from: file("$projectDir/v1.13/build.gradle")
-}
+public interface SplitAssignerFactory extends Serializable {
 
-if (flinkVersions.contains("1.14")) {
-  apply from: file("$projectDir/v1.14/build.gradle")
-}
+  SplitAssigner createAssigner();
 
-if (flinkVersions.contains("1.15")) {
-  apply from: file("$projectDir/v1.15/build.gradle")
+  SplitAssigner createAssigner(Collection<IcebergSourceSplitState> assignerState);
 }
