@@ -34,6 +34,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import org.apache.flink.table.api.TableSchema;
 import org.apache.flink.table.connector.ChangelogMode;
+import org.apache.flink.table.connector.ProviderContext;
 import org.apache.flink.table.connector.source.DataStreamScanProvider;
 import org.apache.flink.table.connector.source.DynamicTableSource;
 import org.apache.flink.table.connector.source.ScanTableSource;
@@ -134,7 +135,7 @@ public class BoundedTableFactory implements DynamicTableSourceFactory {
     public ScanRuntimeProvider getScanRuntimeProvider(ScanContext runtimeProviderContext) {
       return new DataStreamScanProvider() {
         @Override
-        public DataStream<RowData> produceDataStream(StreamExecutionEnvironment env) {
+        public DataStream<RowData> produceDataStream(ProviderContext ctx, StreamExecutionEnvironment env) {
           boolean checkpointEnabled = env.getCheckpointConfig().isCheckpointingEnabled();
           SourceFunction<Row> source = new BoundedTestSource<>(elementsPerCheckpoint, checkpointEnabled);
 

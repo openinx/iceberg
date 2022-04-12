@@ -28,6 +28,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.TableSchema;
 import org.apache.flink.table.connector.ChangelogMode;
+import org.apache.flink.table.connector.ProviderContext;
 import org.apache.flink.table.connector.source.DataStreamScanProvider;
 import org.apache.flink.table.connector.source.DynamicTableSource;
 import org.apache.flink.table.connector.source.ScanTableSource;
@@ -159,7 +160,7 @@ public class IcebergTableSource
   public ScanRuntimeProvider getScanRuntimeProvider(ScanContext runtimeProviderContext) {
     return new DataStreamScanProvider() {
       @Override
-      public DataStream<RowData> produceDataStream(StreamExecutionEnvironment execEnv) {
+      public DataStream<RowData> produceDataStream(ProviderContext ctxt, StreamExecutionEnvironment execEnv) {
         return createDataStream(execEnv);
       }
 
