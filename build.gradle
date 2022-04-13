@@ -65,6 +65,10 @@ allprojects {
   repositories {
     mavenCentral()
     mavenLocal()
+    // TODO For flink 1.15 snapshots temporarily and remove this once we've release the flink 1.15.0
+    maven {
+      url "https://repository.apache.org/content/repositories/snapshots"
+    }
   }
 }
 
