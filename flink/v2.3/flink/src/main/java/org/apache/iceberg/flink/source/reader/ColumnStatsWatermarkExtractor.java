@@ -29,6 +29,7 @@ import org.apache.iceberg.relocated.com.google.common.base.Preconditions;
 import org.apache.iceberg.types.Conversions;
 import org.apache.iceberg.types.Type.TypeID;
 import org.apache.iceberg.types.Types;
+import org.apache.iceberg.util.DateTimeUtil;
 
 /**
  * {@link SplitWatermarkExtractor} implementation which uses an Iceberg timestamp column statistics
@@ -101,9 +102,15 @@ public class ColumnStatsWatermarkExtractor implements SplitWatermarkExtractor, S
                   eventTimeFieldName,
                   eventTimeFieldId,
                   scanTask.file());
-              return timeUnit.toMillis(
+              long lowerBound =
                   Conversions.fromByteBuffer(
-                      Types.LongType.get(), scanTask.file().lowerBounds().get(eventTimeFieldId)));
+                      Types.LongType.get(), scanTask.file().lowerBounds().get(eventTimeFieldId));
+              return switch (timeUnit) {
+                case MICROSECONDS -> DateTimeUtil.microsToMillis(lowerBound);
+                case NANOSECONDS ->
+                    DateTimeUtil.microsToMillis(DateTimeUtil.nanosToMicros(lowerBound));
+                default -> timeUnit.toMillis(lowerBound);
+              };
             })
         .min(Comparator.comparingLong(l -> l))
         .get();

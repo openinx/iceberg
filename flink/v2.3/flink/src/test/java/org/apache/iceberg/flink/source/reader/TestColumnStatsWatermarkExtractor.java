@@ -26,9 +26,11 @@ import static org.assertj.core.api.Assumptions.assumeThat;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -127,7 +129,10 @@ public class TestColumnStatsWatermarkExtractor {
         new ColumnStatsWatermarkExtractor(SCHEMA, columnName, TimeUnit.MICROSECONDS);
 
     assertThat(extractor.extractWatermark(split(0)))
-        .isEqualTo(MIN_VALUES.get(0).get(columnName) / 1000L);
+        .isEqualTo(
+            Instant.EPOCH
+                .plus(MIN_VALUES.get(0).get(columnName), ChronoUnit.MICROS)
+                .toEpochMilli());
   }
 
   @TestTemplate
