@@ -79,7 +79,9 @@ public abstract class FilterIterator<T> implements CloseableIterator<T> {
   public void close() {
     if (!closed) {
       try {
-        ((Closeable) items).close();
+        if (items instanceof Closeable closeable) {
+          closeable.close();
+        }
       } catch (IOException e) {
         throw new UncheckedIOException(e);
       }
